@@ -47,7 +47,10 @@ jobs:
             latexmk
 
       - name: Install Mermaid CLI
-        run: npm install -g @mermaid-js/mermaid-cli
+        run: |
+          npm install -g @mermaid-js/mermaid-cli
+          # pandoc-mermaid-filter expects 'mermaid' but mermaid-cli installs as 'mmdc'
+          sudo ln -s $(which mmdc) /usr/local/bin/mermaid
 
       - name: Install pandoc-mermaid filter
         run: pip install pandoc-mermaid-filter
