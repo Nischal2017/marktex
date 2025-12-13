@@ -1,0 +1,302 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{\textbf{#1}}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\ifLuaTeX
+  \usepackage{luacolor}
+  \usepackage[soul]{lua-ul}
+\else
+  \usepackage{soul}
+\fi
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\hypertarget{marktex-example-document}{%
+\section{MarkTeX Example Document}\label{marktex-example-document}}
+
+This is a sample document demonstrating MarkTeX's ability to convert
+Markdown with Mermaid diagrams to beautiful PDFs.
+
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+MarkTeX combines the simplicity of Markdown with the power of LaTeX and
+the clarity of Mermaid diagrams. This makes it perfect for:
+
+\begin{itemize}
+\tightlist
+\item
+  Technical documentation
+\item
+  Research reports
+\item
+  Project proposals
+\item
+  Academic papers
+\item
+  System design documents
+\end{itemize}
+
+\hypertarget{workflow-diagram}{%
+\subsection{Workflow Diagram}\label{workflow-diagram}}
+
+Here's a simple workflow showing how MarkTeX processes your documents:
+
+\includegraphics{mermaid-images/c705c5fba66d4d0c1a54407a931f9e69e9c96408.png}
+
+\hypertarget{system-architecture}{%
+\subsection{System Architecture}\label{system-architecture}}
+
+Complex systems are easier to understand with diagrams:
+
+\includegraphics{mermaid-images/98809a8c8656af4d91f7b9ee4f91a7da7b5622ec.png}
+
+\hypertarget{process-flow}{%
+\subsection{Process Flow}\label{process-flow}}
+
+\includegraphics{mermaid-images/603a96fa86a82f4986f104029d1727ce4cd455be.png}
+
+\hypertarget{code-example}{%
+\subsection{Code Example}\label{code-example}}
+
+MarkTeX also handles code blocks beautifully:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ convert\_markdown\_to\_pdf(input\_file):}
+    \CommentTok{"""Convert a Markdown file to PDF using MarkTeX."""}
+\NormalTok{    subprocess.run([}
+        \StringTok{"marktex"}\NormalTok{,}
+\NormalTok{        input\_file}
+\NormalTok{    ])}
+    \BuiltInTok{print}\NormalTok{(}\SpecialStringTok{f"✓ Converted }\SpecialCharTok{\{}\NormalTok{input\_file}\SpecialCharTok{\}}\SpecialStringTok{ to PDF!"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{features}{%
+\subsection{Features}\label{features}}
+
+\hypertarget{text-formatting}{%
+\subsubsection{Text Formatting}\label{text-formatting}}
+
+You can use \textbf{bold}, \emph{italic}, \texttt{inline\ code}, and
+even \st{strikethrough} text.
+
+\hypertarget{lists}{%
+\subsubsection{Lists}\label{lists}}
+
+Ordered lists:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  First item
+\item
+  Second item
+\item
+  Third item
+\end{enumerate}
+
+Unordered lists:
+
+\begin{itemize}
+\tightlist
+\item
+  Feature A
+\item
+  Feature B
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Sub-feature B.1
+  \item
+    Sub-feature B.2
+  \end{itemize}
+\item
+  Feature C
+\end{itemize}
+
+\hypertarget{tables}{%
+\subsubsection{Tables}\label{tables}}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Feature & Markdown & LaTeX & PDF \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Text & ✓ & ✓ & ✓ \\
+Images & ✓ & ✓ & ✓ \\
+Diagrams & ✓ & ✓ & ✓ \\
+Math & ✓ & ✓ & ✓ \\
+\end{longtable}
+
+\hypertarget{mathematics}{%
+\subsubsection{Mathematics}\label{mathematics}}
+
+Inline math: \(E = mc^2\)
+
+Block math:
+
+\[
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+\]
+
+\hypertarget{sequence-diagram}{%
+\subsection{Sequence Diagram}\label{sequence-diagram}}
+
+\includegraphics{mermaid-images/939b21d12f0f5f346fd9164fe14269226bb0d012.png}
+
+\hypertarget{state-diagram}{%
+\subsection{State Diagram}\label{state-diagram}}
+
+\includegraphics{mermaid-images/751290d7db18cecb61d4446dc8c65219f4a59037.png}
+
+\hypertarget{conclusion}{%
+\subsection{Conclusion}\label{conclusion}}
+
+MarkTeX makes it easy to create professional documents with diagrams.
+Simply write your content in Markdown, add Mermaid diagrams where
+needed, and run:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{marktex}\NormalTok{ example.md}
+\end{Highlighting}
+\end{Shaded}
+
+That's it! You'll get a beautiful PDF with all your diagrams rendered
+perfectly.
+
+\hypertarget{learn-more}{%
+\subsection{Learn More}\label{learn-more}}
+
+\begin{itemize}
+\tightlist
+\item
+  GitHub: https://github.com/yourusername/marktex
+\item
+  Documentation: See README.md
+\item
+  License: MIT
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\emph{Generated with MarkTeX - Markdown to PDF made simple.}
+
+\end{document}
