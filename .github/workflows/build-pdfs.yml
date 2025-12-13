@@ -37,14 +37,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cache TeX Live
+      - name: Cache TinyTeX
         uses: actions/cache@v4
         with:
-          path: |
-            /usr/share/texlive
-            /usr/share/texmf
-            /var/lib/texmf
-          key: texlive-${{ runner.os }}
+          path: ~/.TinyTeX
+          key: tinytex-xelatex-${{ runner.os }}
 
       - name: Cache npm global packages
         uses: actions/cache@v4
@@ -58,17 +55,21 @@ jobs:
           path: ~/.cache/pip
           key: pip-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
-      - name: Install system dependencies
+      - name: Install TinyTeX
+        run: |
+          if [ ! -d ~/.TinyTeX ]; then
+            wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
+          fi
+          echo "$HOME/.TinyTeX/bin/x86_64-linux" >> $GITHUB_PATH
+
+      - name: Install LaTeX packages
+        run: |
+          ~/bin/tlmgr install xetex latexmk collection-fontsrecommended collection-latexextra || true
+
+      - name: Install pandoc
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            pandoc \
-            texlive-latex-base \
-            texlive-latex-extra \
-            texlive-xetex \
-            texlive-fonts-recommended \
-            texlive-fonts-extra \
-            latexmk
+          sudo apt-get install -y pandoc
 
       - name: Install Mermaid CLI
         run: |
