@@ -1,6 +1,6 @@
 # MarkTeX Example Document
 
-This is a sample document demonstrating MarkTeX's ability to convert Markdown with Mermaid diagrams to beautiful PDFs.
+This is a sample document demonstrating MarkTeX's ability to convert Markdown with Mermaid diagrams to beautiful PDFs
 
 ## Introduction
 
