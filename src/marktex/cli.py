@@ -243,7 +243,7 @@ def compile_tex_to_pdf(tex_file: Path, output_pdf: Path) -> bool:
             result = subprocess.run(
                 [
                     "latexmk",
-                    "-pdf",
+                    "-xelatex",
                     "-interaction=nonstopmode",
                     "-output-directory=" + str(tmpdir_path),
                     temp_tex.name

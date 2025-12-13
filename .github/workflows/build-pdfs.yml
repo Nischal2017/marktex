@@ -65,6 +65,7 @@ jobs:
             pandoc \
             texlive-latex-base \
             texlive-latex-extra \
+            texlive-xetex \
             texlive-fonts-recommended \
             texlive-fonts-extra \
             latexmk
