@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "marktex"
+version = "0.2.0"
+description = "Convert Markdown files with Mermaid diagrams to LaTeX and PDF with GitHub Actions integration"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+keywords = ["markdown", "latex", "pdf", "mermaid", "pandoc", "converter"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Documentation",
+    "Topic :: Text Processing :: Markup :: LaTeX",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+
+[project.scripts]
+marktex = "marktex.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/marktex"
+Repository = "https://github.com/yourusername/marktex"
+Issues = "https://github.com/yourusername/marktex/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/marktex"]

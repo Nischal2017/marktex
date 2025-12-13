@@ -1,0 +1,110 @@
+name: Build PDFs from Markdown
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - '**.md'
+      - '!PDF/**'
+      - '!TEX/**'
+      - '!recent/**'
+      - '!README.md'
+      - '!CONTRIBUTING.md'
+      - '!LICENSE.md'
+
+  # Allow manual triggers
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Fetch last 2 commits to detect changes
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            pandoc \
+            texlive-latex-base \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-fonts-extra \
+            latexmk
+
+      - name: Install Mermaid CLI
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: Install pandoc-mermaid filter
+        run: pip install pandoc-mermaid-filter
+
+      - name: Install MarkTeX
+        run: pip install -e .
+
+      - name: Detect changed markdown files
+        id: changed-files
+        run: |
+          # Get list of changed .md files (excluding special folders and docs)
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | \
+            grep '\.md$' | \
+            grep -v '^PDF/' | \
+            grep -v '^TEX/' | \
+            grep -v '^recent/' | \
+            grep -v '^README\.md$' | \
+            grep -v '^CONTRIBUTING\.md$' | \
+            grep -v '^LICENSE\.md$' || true)
+
+          # Save to output
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Print for logging
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No markdown files changed"
+          else
+            echo "Changed markdown files:"
+            echo "$CHANGED_FILES"
+          fi
+
+      - name: Build PDFs and TEX files
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          # Process each changed markdown file
+          while IFS= read -r file; do
+            if [ -n "$file" ] && [ -f "$file" ]; then
+              echo "Building: $file"
+              marktex "$file" --repo-root . || echo "Failed to build $file"
+            fi
+          done <<< "${{ steps.changed-files.outputs.files }}"
+
+      - name: Commit generated files
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Add generated files
+          git add PDF/ TEX/ recent/ 2>/dev/null || true
+
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-build PDFs and TEX files [skip ci]"
+            git push
+          fi
