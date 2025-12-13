@@ -56,9 +56,9 @@ jobs:
           key: pip-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
       - name: Install Tectonic
-        run: |
-          curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        uses: wtfjoke/setup-tectonic@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install pandoc
         run: |
