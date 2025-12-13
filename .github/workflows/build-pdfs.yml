@@ -72,10 +72,11 @@ jobs:
           npm install -g @mermaid-js/mermaid-cli
           # pandoc-mermaid-filter expects 'mermaid' but mermaid-cli installs as 'mmdc'
           # Create wrapper script with puppeteer config for CI (no sandbox needed)
+          # Suppress all output to avoid corrupting pandoc's JSON pipeline
           echo '{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}' > /tmp/puppeteer-config.json
           sudo tee /usr/local/bin/mermaid > /dev/null << 'EOF'
           #!/bin/bash
-          exec mmdc -p /tmp/puppeteer-config.json "$@"
+          mmdc -p /tmp/puppeteer-config.json "$@" > /dev/null 2>&1
           EOF
           sudo chmod +x /usr/local/bin/mermaid
 
