@@ -239,6 +239,12 @@ def compile_tex_to_pdf(tex_file: Path, output_pdf: Path) -> bool:
         # Copy TEX file to temp directory
         shutil.copy(tex_file, temp_tex)
 
+        # Copy mermaid-images if they exist (created during pandoc conversion)
+        mermaid_src = Path.cwd() / "mermaid-images"
+        if mermaid_src.exists():
+            mermaid_dst = tmpdir_path / "mermaid-images"
+            shutil.copytree(mermaid_src, mermaid_dst)
+
         try:
             result = subprocess.run(
                 [
