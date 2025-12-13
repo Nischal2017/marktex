@@ -163,6 +163,7 @@ def convert_md_to_tex(input_md: Path, output_tex: Path) -> bool:
                 str(input_md),
                 "--from=markdown",
                 "--to=latex",
+                "--standalone",
                 "--filter", "pandoc-mermaid",
                 "-o", str(output_tex)
             ],
