@@ -25,9 +25,9 @@ def check_dependencies() -> tuple[bool, list[str]]:
     if subprocess.run(["which", "pandoc-mermaid"], capture_output=True).returncode != 0:
         missing.append("pandoc-mermaid (install via: uv tool install --from pandoc-mermaid-filter pandoc-mermaid-filter)")
 
-    # Check for latexmk
-    if subprocess.run(["which", "latexmk"], capture_output=True).returncode != 0:
-        missing.append("latexmk (install via: sudo apt-get install texlive-full)")
+    # Check for tectonic
+    if subprocess.run(["which", "tectonic"], capture_output=True).returncode != 0:
+        missing.append("tectonic (install via: curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh)")
 
     # Check for mmdc (mermaid-cli)
     if subprocess.run(["which", "mmdc"], capture_output=True).returncode != 0:
@@ -248,10 +248,8 @@ def compile_tex_to_pdf(tex_file: Path, output_pdf: Path) -> bool:
         try:
             result = subprocess.run(
                 [
-                    "latexmk",
-                    "-xelatex",
-                    "-interaction=nonstopmode",
-                    "-output-directory=" + str(tmpdir_path),
+                    "tectonic",
+                    "-o", str(tmpdir_path),
                     temp_tex.name
                 ],
                 cwd=tmpdir_path,
