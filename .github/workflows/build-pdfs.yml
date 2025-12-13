@@ -64,7 +64,7 @@ jobs:
 
       - name: Install LaTeX packages
         run: |
-          ~/bin/tlmgr install xetex latexmk collection-fontsrecommended collection-latexextra || true
+          ~/.TinyTeX/bin/x86_64-linux/tlmgr install xetex latexmk collection-fontsrecommended collection-latexextra soul || true
 
       - name: Install pandoc
         run: |
