@@ -159,4 +159,4 @@ That's it! You'll get a beautiful PDF with all your diagrams rendered perfectly.
 
 ---
 
-*Generated with MarkTeX - Markdown to PDF made simple.*
+*Generated with MarkTeX - Markdown to PDF made simple. Now with Tectonic!*
