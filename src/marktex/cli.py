@@ -239,7 +239,7 @@ def compile_tex_to_pdf(tex_file: Path, output_pdf: Path) -> bool:
         shutil.copy(tex_file, temp_tex)
 
         try:
-            subprocess.run(
+            result = subprocess.run(
                 [
                     "latexmk",
                     "-pdf",
@@ -249,7 +249,6 @@ def compile_tex_to_pdf(tex_file: Path, output_pdf: Path) -> bool:
                 ],
                 cwd=tmpdir_path,
                 capture_output=True,
-                text=True,
                 check=True
             )
 
@@ -262,7 +261,9 @@ def compile_tex_to_pdf(tex_file: Path, output_pdf: Path) -> bool:
         except subprocess.CalledProcessError as e:
             print(f"  ✗ Error compiling LaTeX to PDF:", file=sys.stderr)
             if e.stderr:
-                print(e.stderr, file=sys.stderr)
+                # Decode with error handling for non-UTF8 output
+                stderr_text = e.stderr.decode('utf-8', errors='replace')
+                print(stderr_text, file=sys.stderr)
             return False
 
 
