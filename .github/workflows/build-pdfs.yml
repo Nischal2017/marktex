@@ -35,6 +35,27 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Cache TeX Live
+        uses: actions/cache@v4
+        with:
+          path: |
+            /usr/share/texlive
+            /usr/share/texmf
+            /var/lib/texmf
+          key: texlive-${{ runner.os }}
+
+      - name: Cache npm global packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-mermaid
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -50,7 +71,7 @@ jobs:
         run: |
           npm install -g @mermaid-js/mermaid-cli
           # pandoc-mermaid-filter expects 'mermaid' but mermaid-cli installs as 'mmdc'
-          sudo ln -s $(which mmdc) /usr/local/bin/mermaid
+          sudo ln -s $(which mmdc) /usr/local/bin/mermaid || true
 
       - name: Install pandoc-mermaid filter
         run: pip install pandoc-mermaid-filter
@@ -58,18 +79,31 @@ jobs:
       - name: Install MarkTeX
         run: pip install -e .
 
-      - name: Detect changed markdown files
+      - name: Detect markdown files to build
         id: changed-files
         run: |
-          # Get list of changed .md files (excluding special folders and docs)
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | \
-            grep '\.md$' | \
-            grep -v '^PDF/' | \
-            grep -v '^TEX/' | \
-            grep -v '^recent/' | \
-            grep -v '^README\.md$' | \
-            grep -v '^CONTRIBUTING\.md$' | \
-            grep -v '^LICENSE\.md$' || true)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual trigger: build all markdown files
+            echo "Manual trigger - building all markdown files"
+            CHANGED_FILES=$(find . -name '*.md' -type f | \
+              grep -v '^./PDF/' | \
+              grep -v '^./TEX/' | \
+              grep -v '^./recent/' | \
+              grep -v '^./README\.md$' | \
+              grep -v '^./CONTRIBUTING\.md$' | \
+              grep -v '^./LICENSE\.md$' | \
+              sed 's|^\./||' || true)
+          else
+            # Push trigger: only build changed files
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | \
+              grep '\.md$' | \
+              grep -v '^PDF/' | \
+              grep -v '^TEX/' | \
+              grep -v '^recent/' | \
+              grep -v '^README\.md$' | \
+              grep -v '^CONTRIBUTING\.md$' | \
+              grep -v '^LICENSE\.md$' || true)
+          fi
 
           # Save to output
           echo "files<<EOF" >> $GITHUB_OUTPUT
@@ -78,9 +112,9 @@ jobs:
 
           # Print for logging
           if [ -z "$CHANGED_FILES" ]; then
-            echo "No markdown files changed"
+            echo "No markdown files to build"
           else
-            echo "Changed markdown files:"
+            echo "Markdown files to build:"
             echo "$CHANGED_FILES"
           fi
 
