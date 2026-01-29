@@ -1,0 +1,416 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\hypertarget{retrieval-experiment-dense-vs-hybridrerank}{%
+\section{Retrieval Experiment: Dense vs
+Hybrid+Rerank}\label{retrieval-experiment-dense-vs-hybridrerank}}
+
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
+
+This experiment compares dense-only retrieval against a hybrid pipeline
+(Dense + BM25 + RRF + Rerank) for Case-Based Reasoning on mathematical
+problem solving. Retrieval quality is evaluated using an LLM-based
+document grader that judges whether retrieved examples contain
+transferable problem-solving techniques.
+
+\hypertarget{experimental-setup}{%
+\subsection{Experimental Setup}\label{experimental-setup}}
+
+\hypertarget{configurations}{%
+\subsubsection{Configurations}\label{configurations}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1481}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2222}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1852}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Config
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Dense Embeddings
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+BM25
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+RRF Fusion
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Reranker
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+A. Dense (Nomic) & Nomic-embed-v1.5 & - & - & - \\
+B. Dense (Qwen3) & Qwen3-Embedding-8B & - & - & - \\
+C. Hybrid+Rerank (Nomic) & Nomic-embed-v1.5 & Yes & Yes &
+BGE-reranker-v2-m3 \\
+D. Hybrid+Rerank (Qwen3) & Qwen3-Embedding-8B & Yes & Yes &
+BGE-reranker-v2-m3 \\
+\end{longtable}
+
+\hypertarget{pipeline}{%
+\subsubsection{Pipeline}\label{pipeline}}
+
+\includegraphics{mermaid-images/30e15f0ad893f3403669cc4a0bc3ea29a3fd9e14.png}
+
+The hybrid pipeline performs parallel dense and BM25 retrieval (N=20
+each), fuses results via Reciprocal Rank Fusion (RRF, k=60), then
+reranks with a cross-encoder to select the top K=4 documents.
+
+\hypertarget{datasets}{%
+\subsubsection{Datasets}\label{datasets}}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Dataset & Test Queries & Retrieval Corpus (Training Set) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GSM8K & 1,319 & 7,473 \\
+MATH & 5,000 & 7,500 \\
+\end{longtable}
+
+\hypertarget{technical-components}{%
+\subsubsection{Technical Components}\label{technical-components}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.4074}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5926}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Component
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Implementation
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Dense Embeddings & Nomic-embed-v1.5 (137M params) or
+Qwen3-Embedding-8B \\
+Vector Store & ChromaDB \\
+BM25 & rank\_bm25.BM25Okapi \\
+Reranker & BAAI/bge-reranker-v2-m3 (CrossEncoder) \\
+Grader LLM & Qwen2.5-32B-Instruct via vLLM \\
+\end{longtable}
+
+Documents are graded in a single batched vLLM call. The grader outputs a
+binary ``yes''/``no'' judgment on whether each document provides
+adaptable problem-solving techniques for the query.
+
+\hypertarget{hyperparameters}{%
+\subsubsection{Hyperparameters}\label{hyperparameters}}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Parameter & Value & Description \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+N\_INITIAL & 20 & Documents retrieved per method \\
+N\_RERANK & 20 & Documents passed to reranker after RRF \\
+TOP\_K & 4 & Final documents graded \\
+RRF\_K & 60 & RRF smoothing constant \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{results}{%
+\subsection{Results}\label{results}}
+
+\hypertarget{gsm8k-1319-queries}{%
+\subsubsection{GSM8K (1,319 queries)}\label{gsm8k-1319-queries}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0938}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2188}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2344}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1719}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1562}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Rank
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Config
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Avg Approved
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Approval Rate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Zero Rate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Coverage
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & \textbf{B. Dense (Qwen3)} & \textbf{3.40} & \textbf{85.0\%} &
+\textbf{1.4\%} & \textbf{98.6\%} \\
+2 & D. Hybrid+Rerank (Qwen3) & 3.16 & 79.0\% & 3.0\% & 97.0\% \\
+3 & A. Dense (Nomic) & 3.14 & 78.5\% & 2.4\% & 97.6\% \\
+4 & C. Hybrid+Rerank (Nomic) & 3.11 & 77.7\% & 3.0\% & 97.0\% \\
+\end{longtable}
+
+\hypertarget{approval-distribution-gsm8k}{%
+\paragraph{Approval Distribution
+(GSM8K)}\label{approval-distribution-gsm8k}}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+Config & 0 docs & 1 doc & 2 docs & 3 docs & 4 docs \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Dense (Qwen3) & 18 & 58 & 120 & 304 & 819 \\
+Hybrid+Rerank (Qwen3) & 39 & 92 & 163 & 349 & 676 \\
+Dense (Nomic) & 32 & 117 & 152 & 351 & 667 \\
+Hybrid+Rerank (Nomic) & 40 & 105 & 173 & 355 & 646 \\
+\end{longtable}
+
+\hypertarget{math-5000-queries}{%
+\subsubsection{MATH (5,000 queries)}\label{math-5000-queries}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0938}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2188}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2344}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1719}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1562}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Rank
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Config
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Avg Approved
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Approval Rate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Zero Rate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Coverage
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & \textbf{B. Dense (Qwen3)} & \textbf{3.48} & \textbf{86.9\%} &
+\textbf{1.5\%} & \textbf{98.5\%} \\
+2 & A. Dense (Nomic) & 2.86 & 71.4\% & 6.1\% & 93.9\% \\
+3 & D. Hybrid+Rerank (Qwen3) & 2.79 & 69.8\% & 5.7\% & 94.3\% \\
+4 & C. Hybrid+Rerank (Nomic) & 2.63 & 65.8\% & 7.7\% & 92.3\% \\
+\end{longtable}
+
+\hypertarget{coverage-queries-with-at-least-1-relevant-example}{%
+\subsubsection{Coverage (queries with at least 1 relevant
+example)}\label{coverage-queries-with-at-least-1-relevant-example}}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Config & GSM8K & MATH \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Dense (Qwen3)} & \textbf{98.6\%} (1301/1319) & \textbf{98.5\%}
+(4927/5000) \\
+Dense (Nomic) & 97.6\% (1287/1319) & 93.9\% (4697/5000) \\
+Hybrid+Rerank (Qwen3) & 97.0\% (1280/1319) & 94.3\% (4716/5000) \\
+Hybrid+Rerank (Nomic) & 97.0\% (1279/1319) & 92.3\% (4614/5000) \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{analysis}{%
+\subsection{Analysis}\label{analysis}}
+
+\hypertarget{bm25-impact}{%
+\subsubsection{BM25 Impact}\label{bm25-impact}}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Dataset & Dense Qwen3 & Hybrid Qwen3 & Penalty \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GSM8K & 85.0\% & 79.0\% & \textbf{-6.0pp} \\
+MATH & 86.9\% & 69.8\% & \textbf{-17.1pp} \\
+\end{longtable}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Dataset & Dense Nomic & Hybrid Nomic & Penalty \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GSM8K & 78.5\% & 77.7\% & -0.8pp \\
+MATH & 71.4\% & 65.8\% & \textbf{-5.6pp} \\
+\end{longtable}
+
+The BM25 penalty increases with dataset complexity. On the more diverse
+MATH dataset, adding BM25 to Dense Qwen3 reduces approval rate by 17.1
+percentage points.
+
+\hypertarget{hyperparameter-sweep-gsm8k-hybrid-qwen3}{%
+\subsubsection{Hyperparameter Sweep (GSM8K, Hybrid
+Qwen3)}\label{hyperparameter-sweep-gsm8k-hybrid-qwen3}}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+N\_INITIAL & N\_RERANK & TOP\_K & Approval & Avg Approved & Zero Rate \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{10} & \textbf{10} & 4 & \textbf{79.9\%} & \textbf{3.20} &
+\textbf{2.4\%} \\
+50 & 20 & 4 & 79.7\% & 3.19 & 2.7\% \\
+20 (baseline) & 20 & 4 & 79.0\% & 3.16 & 3.0\% \\
+100 & 50 & 4 & 78.4\% & 3.13 & 2.7\% \\
+50 & 50 & 4 & 78.2\% & 3.13 & 2.5\% \\
+\end{longtable}
+
+Smaller retrieval pools outperform larger ones. Expanding the candidate
+pool introduces more noise from BM25 that the reranker fails to filter.
+
+\hypertarget{zero-approval-query-analysis-dense-nomic-gsm8k}{%
+\subsubsection{Zero-Approval Query Analysis (Dense Nomic,
+GSM8K)}\label{zero-approval-query-analysis-dense-nomic-gsm8k}}
+
+32 queries (2.4\%) received zero approved documents. Breakdown by
+problem type: - 31\% ratio/proportion problems - 22\% rate/time problems
+- 22\% multi-step problems
+
+Root cause: embeddings match on topic similarity rather than
+mathematical reasoning structure. A ``bakery'' problem about unit
+conversion retrieves other ``bakery'' problems about quantity counting,
+not structurally similar unit conversion problems from other domains.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{key-findings}{%
+\subsection{Key Findings}\label{key-findings}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Dense Qwen3 dominates} across both datasets (85-87\% approval,
+  98.5\%+ coverage).
+\item
+  \textbf{Dense outperforms Hybrid} for both embedding models on both
+  datasets.
+\item
+  \textbf{Embedding model quality is the dominant factor.} Upgrading
+  from Nomic (137M) to Qwen3 (8B) yields +6.5pp on GSM8K and +15.5pp on
+  MATH --- far exceeding any pipeline-level improvement.
+\item
+  \textbf{BM25 degrades retrieval quality for math.} Keyword matching
+  surfaces topically similar but structurally different problems. The
+  penalty grows with dataset complexity (-6pp GSM8K, -17pp MATH).
+\item
+  \textbf{The BGE reranker cannot compensate} for BM25 noise injection,
+  as it lacks math reasoning awareness.
+\item
+  \textbf{These results contradict Anthropic's Contextual Retrieval
+  findings} (49-67\% failure rate reduction from hybrid retrieval),
+  suggesting that domain-specific retrieval tasks --- particularly
+  mathematical reasoning --- do not benefit from generic hybrid
+  pipelines.
+\end{enumerate}
+
+\hypertarget{recommendation}{%
+\subsection{Recommendation}\label{recommendation}}
+
+Use \textbf{Dense Qwen3} for the CBR retrieval pipeline. It is the
+simplest configuration and outperforms all alternatives. The hybrid
+approach adds complexity while degrading quality.
+
+\end{document}
